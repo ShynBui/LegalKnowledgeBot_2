@@ -65,9 +65,9 @@ class ChuongVaDieuPhapDien(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(String(255), primary_key=True)
-    chi_muc = Column(Integer)
-    mapc = Column(String(255))
-    ten = Column(String(255))
+    chi_muc = Column(Text)
+    mapc = Column(Text)
+    ten = Column(Text)
     chu_de_id = Column(String(255), ForeignKey('chu_de_phap_dien.id'))
     de_muc_id = Column(String(255), ForeignKey('de_muc_phap_dien.id'))
     chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='chuong_va_dieu_phap_dien', lazy=True)
