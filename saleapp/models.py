@@ -1,6 +1,6 @@
 from hmac import compare_digest
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, Enum, Date
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from saleapp import db, app
 from enum import Enum as UserEnum
 from datetime import datetime
@@ -53,7 +53,7 @@ class DeMucPhapDien(db.Model):
 
     id = Column(String(255), primary_key=True)
     stt = Column(Integer)
-    ten_de_muc = Column(String(100))
+    ten_de_muc = Column(String(300))
     chu_de_id = Column(String(255), ForeignKey('chu_de_phap_dien.id'))
     chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='de_muc_phap_dien', lazy=True)
 
@@ -68,13 +68,17 @@ class ChuongVaDieuPhapDien(db.Model):
     chi_muc = Column(Text)
     mapc = Column(Text)
     ten = Column(Text)
-    chu_de_id = Column(String(255), ForeignKey('chu_de_phap_dien.id'))
+    stt = Column(Integer)
+    chuong_cha_id = Column(String(255), ForeignKey('chuong_va_dieu_phap_dien.id'), nullable=True)
+    chuong_cha = relationship('models.ChuongVaDieuPhapDien', backref=backref('chi_muc_con', uselist=True, lazy=True), lazy=False, uselist=False, remote_side=[id])
+    # chu_de_id = Column(String(255), ForeignKey('chu_de_phap_dien.id'))
     de_muc_id = Column(String(255), ForeignKey('de_muc_phap_dien.id'))
-    chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='chuong_va_dieu_phap_dien', lazy=True)
+    # chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='chuong_va_dieu_phap_dien', lazy=True)
     de_muc_phap_dien = relationship('models.DeMucPhapDien', backref='chuong_va_dieu_phap_dien', lazy=True)
 
     def __str__(self):
         return str(self.chi_muc)
+
 
 class ThuatNgu(BaseModel):
     __tablename__ = 'thuat_ngu'
