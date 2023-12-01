@@ -6,9 +6,12 @@ from saleapp import app, jwt, dao
 
 from flask import jsonify, request
 
+from saleapp.dao import remove_escape_sequences
 from saleapp.models import User
 import os
 import pandas as pd
+import pandas as pd
+from langchain.document_loaders import UnstructuredHTMLLoader
 
 # @jwt_required()
 def thuatngu_serializer(thuatngu):
@@ -53,3 +56,36 @@ def is_in(x, paragraph):
     if (x in paragraph):
         return x
     return -1
+
+
+def get_thuat_ngu_in_html(id):
+    file_path = f"./data/bophapdiendientu/demuc/{id}.html"  # Đặt tên file HTML dựa trên id
+    loader = UnstructuredHTMLLoader(file_path)
+    data = loader.load()
+    html = data[0].page_content
+    html = html.replace('\n\\n', ' ')
+    html = html.replace('\n', ' ')
+    html = html.replace('\r', ' ')
+    html = remove_escape_sequences(html)
+    data_thuat_ngu = pd.read_csv(
+        '/home/duchoang/Workspace/TempMMM2023/backend_V2/saleapp/data/full_thuat_ngu_procesing_v3.csv')
+    data_thuat_ngu['thuatngu_lower'] = data_thuat_ngu['thuatngu'].map(lambda x: x.lower().strip())
+    words = data_thuat_ngu['thuatngu_lower'].map(lambda x: is_in(x, html))
+    result = [x for x in words if x != -1]
+    result = list(set(result))
+    print(result)
+
+    # Tạo một từ điển để lưu trữ cặp từ và nghĩa tương ứng
+    result_dict = {term: data_thuat_ngu.loc[data_thuat_ngu['thuatngu_lower'] == term, 'mota'].values[0] for term in
+                   result}
+
+    # In ra cặp từ và nghĩa tương ứng
+    for term, meaning in result_dict.items():
+        print(f"{term}: {meaning}")
+
+    # Trả về dữ liệu JSON với cặp từ và nghĩa tương ứng
+    return jsonify(result_dict)
+# def api_tim_thuat_ngu_in_html(id):
+#     get_thuat_ngu_in_html(id)
+#     # Thêm logic xử lý và trả về dữ liệu theo mong muốn
+#     return jsonify({"status": "success", "message": "Thông tin thuật ngữ đã được truy xuất."})

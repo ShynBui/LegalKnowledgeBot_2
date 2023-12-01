@@ -29,6 +29,7 @@ def user_login():
 
 @app.route("/register", methods=["get", "post"])
 def register():
+
     if session.get("user"):
         return redirect(request.url)
     err_msg = ""
@@ -62,7 +63,6 @@ app.register_blueprint(api, url_prefix='/api')
 
 
 
-
 if __name__ == "__main__":
     from saleapp.admin import *
-    app.run(debug=True, host="localhost", port=5050)
+    app.run(debug=True, host="localhost", port=5051)

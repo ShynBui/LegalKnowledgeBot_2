@@ -71,4 +71,4 @@ def api_user_register():
     user = dao.add_user_api(name = name, username = username, password = password, email = email)
     print(user)
     return jsonify({"msg": "register sucess"}), 201
-    # return jsonify({"msg": "register failed"}), 400
+

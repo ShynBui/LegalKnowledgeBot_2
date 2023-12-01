@@ -13,7 +13,7 @@ def demuc_serializer(demuc):
     return {
         'id': demuc.id,
         'stt': demuc.stt,
-        'ten_chu_de': demuc.ten_de_muc,
+        'ten_de_muc': demuc.ten_de_muc,
         'chu_de_id': demuc.chu_de_id
     }
 

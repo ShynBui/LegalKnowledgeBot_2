@@ -5,8 +5,9 @@ from sqlalchemy import null
 
 from saleapp import db
 from saleapp.models import *
-
-
+from bs4 import BeautifulSoup
+import pandas as pd
+from langchain.document_loaders import UnstructuredHTMLLoader
 
 def add_user(name, username, password, **kwargs):
     user = User(name=name,
@@ -95,3 +96,15 @@ def delete_user_by_username(username):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return False
+
+def remove_escape_sequences(string):
+    escape_sequences = ['\a', '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\\\\', '\"', '\?', '\ooo', '\0']
+    for i in escape_sequences:
+        string = string.replace(i, ' ')
+    return string
+def is_in(x, data_thuat_ngu_2):
+    if (x in data_thuat_ngu_2):
+        return x
+    return -1
+
+#
