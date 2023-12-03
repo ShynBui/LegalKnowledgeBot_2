@@ -6,7 +6,7 @@ from saleapp import app, jwt, dao
 
 from flask import jsonify, request
 
-from saleapp.models import User
+from saleapp.models import User, UserRole
 
 
 def user_serializer(user):
@@ -34,31 +34,34 @@ def user_serializer(user):
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
-    print(identity)
+
     return dao.get_user_by_id(identity)
 
 def api_user_login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
-    print(username)
-    print(password)
+
     user = dao.check_login(username, password)
-    print(user)
+
     if user:
         access_token = create_access_token(identity=user.id)
         return jsonify(access_token)
     else:
         return jsonify({"msg": "Bad username or password"}), 401
 
+
+
 @jwt_required()
 @cross_origin()
 def api_current_user():
-    # We can now access our sqlalchemy User object via `current_user`.
+    role_value = current_user.role.value
     return jsonify(
         id=current_user.id,
         name=current_user.name,
         username=current_user.username,
+        role=str(role_value),
     )
+
 
 
 def api_user_register():

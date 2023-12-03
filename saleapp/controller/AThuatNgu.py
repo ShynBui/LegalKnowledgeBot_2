@@ -12,7 +12,7 @@ import os
 import pandas as pd
 import pandas as pd
 from langchain.document_loaders import UnstructuredHTMLLoader
-
+from pyvi import ViTokenizer, ViPosTagger
 # @jwt_required()
 def thuatngu_serializer(thuatngu):
     return {
@@ -37,6 +37,17 @@ def api_thuat_ngu():
        return jsonify(serialized_list_thuat_ngu)
 
 
+
+def get_nouns(sentence):
+    nouns = []
+    annotated_sentence = ViPosTagger.postagging(ViTokenizer.tokenize(sentence))
+    # print(annotated_sentence[0])
+    for i in range(len(annotated_sentence[0])):
+        if annotated_sentence[1][i].startswith('N'):
+            nouns.append(annotated_sentence[0][i])
+    nouns =  list(set(nouns))
+    return nouns
+
 def api_tim_thuat_ngu():
     paragraph = request.json.get("paragraph")
     if paragraph is not None:
@@ -57,7 +68,10 @@ def is_in(x, paragraph):
         return x
     return -1
 
-
+def is_in2(x, result):
+    if (x in result):
+        return 1
+    return 0
 def get_thuat_ngu_in_html(id):
     file_path = f"./data/bophapdiendientu/demuc/{id}.html"  # Đặt tên file HTML dựa trên id
     loader = UnstructuredHTMLLoader(file_path)
@@ -67,25 +81,35 @@ def get_thuat_ngu_in_html(id):
     html = html.replace('\n', ' ')
     html = html.replace('\r', ' ')
     html = remove_escape_sequences(html)
-    data_thuat_ngu = pd.read_csv(
-        '/home/duchoang/Workspace/TempMMM2023/backend_V2/saleapp/data/full_thuat_ngu_procesing_v3.csv')
-    data_thuat_ngu['thuatngu_lower'] = data_thuat_ngu['thuatngu'].map(lambda x: x.lower().strip())
-    words = data_thuat_ngu['thuatngu_lower'].map(lambda x: is_in(x, html))
-    result = [x for x in words if x != -1]
+    nouns = get_nouns(html)
+    print(nouns)
+    result = map(lambda x: x.replace("_", " ").lower(), nouns)
     result = list(set(result))
-    print(result)
+    data_thuat_ngu = pd.read_csv(
+        './data/full_thuat_ngu_procesing_v3.csv')
+    data_thuat_ngu['thuatngu_lower'] = data_thuat_ngu['thuatngu'].map(lambda x: x.lower().strip())
+    words = data_thuat_ngu['thuatngu_lower'].map(lambda x: is_in(x, result))
+    result_x = [x for x in words if x != -1]
+    result_x = list(set(result_x))
 
-    # Tạo một từ điển để lưu trữ cặp từ và nghĩa tương ứng
-    result_dict = {term: data_thuat_ngu.loc[data_thuat_ngu['thuatngu_lower'] == term, 'mota'].values[0] for term in
-                   result}
+    # data_thuat_ngu = pd.read_csv(
+    #     './data/full_thuat_ngu_procesing_v3.csv')
+    #
 
-    # In ra cặp từ và nghĩa tương ứng
+    #
+    # words = data_thuat_ngu['thuatngu_lower'].map(lambda x: is_in(x, html))
+    # result = [x for x in words if x != -1]
+    # result = list(set(result))
+    # print(result)
+    #
+    #
+
+    data_thuat_ngu_temp = data_thuat_ngu.copy()
+    data_thuat_ngu_temp['drop'] = data_thuat_ngu_temp['thuatngu_lower'].map(lambda x: is_in2(x, result_x))
+    data_thuat_ngu_temp = data_thuat_ngu_temp[data_thuat_ngu_temp['drop'] != 0]
+
+    result_dict = {"term": data_thuat_ngu_temp['thuatngu'].tolist(), "meaning": data_thuat_ngu_temp['mota'].tolist()}
     for term, meaning in result_dict.items():
         print(f"{term}: {meaning}")
 
-    # Trả về dữ liệu JSON với cặp từ và nghĩa tương ứng
     return jsonify(result_dict)
-# def api_tim_thuat_ngu_in_html(id):
-#     get_thuat_ngu_in_html(id)
-#     # Thêm logic xử lý và trả về dữ liệu theo mong muốn
-#     return jsonify({"status": "success", "message": "Thông tin thuật ngữ đã được truy xuất."})

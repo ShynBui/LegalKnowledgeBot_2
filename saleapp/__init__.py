@@ -9,7 +9,7 @@ import cloudinary
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-# CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
+
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.secret_key = '689567gh$^^&*#%^&*^&%^*DFGH^&*&*^*'
 app.config["JWT_SECRET_KEY"] = "@^&**&^$%"

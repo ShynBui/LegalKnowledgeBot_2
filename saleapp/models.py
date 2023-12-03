@@ -96,6 +96,29 @@ class ThuatNgu(BaseModel):
         return str(self.thuat_ngu)
 
 
+class CauHoi(BaseModel):
+    __tablename__ = 'cau_hoi'
+    __table_args__ = {'extend_existing': True}
+
+    tieu_de_cau_hoi = Column(Text)
+    noi_dung_cau_hoi = Column(Text)
+    chu_de_id = Column(String(255), ForeignKey('chu_de_phap_dien.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    thoi_gian = Column(DateTime, nullable=False, default=datetime.now())
+    chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='CauHoi')
+    user = relationship('models.User', backref='CauHoi', lazy=True)
+    def __str__(self):
+        return self.tieu_de_cau_hoi
+class Reply(BaseModel):
+    __tablename__ = 'tra_loi'
+    __table_args__ = {'extend_existing': True}
+
+    noi_dung_tra_loi = Column(Text)
+    thoi_gian = Column(DateTime, nullable=False, default=datetime.now())
+    cau_hoi_id = Column(Integer, ForeignKey('cau_hoi.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('models.User', backref='Reply', lazy=True)
+    cau_hoi = relationship('models.CauHoi', backref='Reply', lazy=True)
 
 
 if __name__ == '__main__':

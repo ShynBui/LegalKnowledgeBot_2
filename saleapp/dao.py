@@ -107,4 +107,26 @@ def is_in(x, data_thuat_ngu_2):
         return x
     return -1
 
-#
+
+def add_cau_hoi(tieu_de, noi_dung, chu_de_id, user_id):
+    cauhoi = CauHoi(tieu_de_cau_hoi=tieu_de, noi_dung_cau_hoi=noi_dung, chu_de_id=chu_de_id, user_id=user_id)
+    db.session.add(cauhoi)
+    db.session.commit()
+    return cauhoi
+
+def get_cau_hoi_theo_chu_de(chu_de_id):
+    return CauHoi.query.filter(CauHoi.chu_de_id.__eq__(chu_de_id)).order_by(CauHoi.thoi_gian).all()
+
+def get_reply_of_cau_hoi(cau_hoi_id):
+    return Reply.query.filter(Reply.cau_hoi_id.__eq__(cau_hoi_id)).order_by(Reply.thoi_gian).all()
+
+
+def add_reply(noi_dung, cau_hoi_id, user_id):
+    reply = Reply(noi_dung_tra_loi=noi_dung, cau_hoi_id=cau_hoi_id, user_id=user_id)
+    db.session.add(reply)
+    db.session.commit()
+    return reply
+
+def get_cau_hoi_by_id(id):
+
+    return CauHoi.query.filter(CauHoi.id.__eq__(id)).first()

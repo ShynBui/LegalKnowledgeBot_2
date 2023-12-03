@@ -37,9 +37,9 @@ class TestUserFunc(unittest.TestCase):
         self.assertFalse(user)
 
     def test_add_user_true(self):
-        user = dao.add_user_api(name="testTrue", username="test_true", password="123")
+        user = dao.add_user_api(name="tesst", username="test1", password="123")
         self.assertIsNotNone(user)
-        dao.delete_user_by_username(username="test_true")
+        # dao.delete_user_by_username(username="test_true")
 
 if __name__ == '__main__':
     unittest.main()

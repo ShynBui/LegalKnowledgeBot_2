@@ -6,6 +6,8 @@ from saleapp.controller.AChuDePhapDien import *
 from saleapp.controller.AChuongVaDieu import *
 from saleapp.controller.ADeMucPhapDien import *
 from saleapp.controller.AThuatNgu import *
+from saleapp.controller.ACauHoi import *
+from saleapp.controller.ATraLoi import *
 
 
 
@@ -27,3 +29,13 @@ api.route('/chuong_va_dieu_phap_dien/<chuong_id>/chi_muc', methods=["GET"])(api_
 api.route('/thuat_ngu', methods=["GET"])(api_thuat_ngu)
 api.route('/thuat_ngu/doan_van', methods=["POST"])(api_tim_thuat_ngu)
 api.route('/thuat_ngu/<id>', methods=["POST"])(get_thuat_ngu_in_html)
+
+# cau hoi
+api.route('/cau_hoi/<chu_de_id>', methods=["GET"])(api_get_cau_hoi_theo_chu_de)
+api.route('/add_cau_hoi', methods=["POST"])(api_add_cau_hoi)
+api.route('/cau_hoi_by_id/<id>', methods=["GET"])(api_get_cau_hoi_by_id)
+
+
+# cau tra loi
+api.route('/tra_loi/<cau_hoi_id>', methods=["GET"])(api_get_tra_loi_theo_cau_hoi)
+api.route('/add_tra_loi', methods=["POST"])(api_add_cau_tra_loi)
