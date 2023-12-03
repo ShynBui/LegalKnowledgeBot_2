@@ -5,25 +5,13 @@ import json
 from saleapp import db
 
 
-# def add_chuDe(filename):
-#     df = pd.read_csv(filename)
-
-#     return df['Value'].tolist(), df['Text'].tolist(), df['STT'].tolist()
-
-# def import_chuDe():
-#     value, text, stt = add_chuDe(
-#         '/home/duchoang/Workspace/MaNguonMo2023/backend/saleapp/data/Chude_table.csv')
-
-#     for i in range(len(value)):
-#         db.session.add(ChuDePhapDien(id=value[i], stt=stt[i], text = text[i]))
-#         db.session.commit()
 
 if __name__ == '__main__':
     with app.app_context():
         db.drop_all()
         db.create_all()
         
-        with open('/home/yuu/Documents/WorkSpace/nhomBTP/backend2/saleapp/data/output.json', 'r') as dataFile:
+        with open('/home/duchoang/Workspace/TempMMM2023/backend_V2/saleapp/data/output.json', 'r') as dataFile:
             dataObj = json.load(dataFile)
             
             index = {
