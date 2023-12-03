@@ -7,10 +7,12 @@ from saleapp import app, jwt, dao
 from flask import jsonify, request
 
 from saleapp.dao import remove_escape_sequences
-from saleapp.models import User
+# from saleapp.models import User
 import os
 import pandas as pd
-import pandas as pd
+from pyvi import ViTokenizer, ViPosTagger
+import requests
+
 from langchain.document_loaders import UnstructuredHTMLLoader
 from pyvi import ViTokenizer, ViPosTagger
 # @jwt_required()
@@ -38,6 +40,7 @@ def api_thuat_ngu():
 
 
 
+
 def get_nouns(sentence):
     nouns = []
     annotated_sentence = ViPosTagger.postagging(ViTokenizer.tokenize(sentence))
@@ -48,17 +51,60 @@ def get_nouns(sentence):
     nouns =  list(set(nouns))
     return nouns
 
+API_URL = "https://api-inference.huggingface.co/models/ShynBui/text_classification"
+headers = {"Authorization": "Bearer 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"}
+            
+
 def api_tim_thuat_ngu():
     paragraph = request.json.get("paragraph")
     if paragraph is not None:
+        nouns = get_nouns(paragraph)
+        result = map(lambda x: x.replace("_", " ").lower(), nouns)
+        result = list(set(result))
+
         source_path = os.path.join(app.root_path, 'data', 'full_thuat_ngu_procesing_v3.csv')
         data = pd.read_csv(source_path)
-        words = []
-        for x in data.iloc:
-            if x['thuatngu'] and is_in(x['thuatngu'].lower().strip(), paragraph) != -1:
-                words.append({'word': x['thuatngu'], 'mean': x['mota']})
-        return jsonify(words), 200
-    
+        data['thuatngu_lower'] = data['thuatngu'].map(lambda x : x.lower().strip())
+
+        words = data['thuatngu_lower'].map(lambda x : is_in(x, result))
+        
+        terminology_dict = dict(zip(data['thuatngu_lower'], data['mota']))
+        result_x = []
+        non_existed_word = []
+        for n in words:
+            if n in terminology_dict:
+                result_x.append({'word': n, 'mean': terminology_dict[n]})
+            else:
+                non_existed_word.append(n)
+                
+        all_sentences = paragraph.split('.')
+        all_sentences = list(map(lambda x : x.strip().lower(), all_sentences))
+        find_data = find_sentence_with_word(all_sentences, result)
+
+        find_data['drop'] = find_data['word'].map(lambda x : -1 if (x in non_existed_word) else 1)
+        find_data = find_data[find_data['drop'] != -1]
+        
+        find_data['drop'] = find_data.apply(lambda x : check_at_start_of_sentence(x['word'] , x['sentence']), axis = 1)
+        find_data = find_data[find_data['drop'] != 0]
+        find_data['sentence_en'] = find_data['sentence'].map(lambda x : (ViTokenizer.tokenize(x) + '.'))
+        import time
+        
+        result_non_existed = []
+        
+        for i in find_data['sentence_en']:
+            output = query({
+            "inputs": i.strip()
+            })
+            while "error" in output:
+                print('fail')
+                time.sleep(1)
+                output = query({
+            "inputs": i.strip()
+            })
+            result_non_existed.append({i: output})
+        
+        
+        return jsonify({"existed-words": result_x, "non-existed-words": result_non_existed}), 200    
     return jsonify({"msg": "empty"}), 204
 
 
@@ -72,6 +118,38 @@ def is_in2(x, result):
     if (x in result):
         return 1
     return 0
+
+
+def check_at_start_of_sentence(word, sentence):
+    # Kiểm tra xem từ đó có nằm ở vị trí đầu tiên của câu không
+    if sentence.startswith(word):
+        return 1
+    return 0
+
+
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
+
+
+
+
+
+
+def find_sentence_with_word(sentences, words):
+    result_words = []
+    result_sentenecs = []
+    for word in words:
+        for s in sentences:
+            if word in s:
+                result_words.append(word)
+                result_sentenecs.append(s)
+    return pd.DataFrame({'word' : result_words,
+                        'sentence': result_sentenecs})
+    
+    
+    
+
 def get_thuat_ngu_in_html(id):
     file_path = f"./data/bophapdiendientu/demuc/{id}.html"  # Đặt tên file HTML dựa trên id
     loader = UnstructuredHTMLLoader(file_path)
@@ -92,17 +170,7 @@ def get_thuat_ngu_in_html(id):
     result_x = [x for x in words if x != -1]
     result_x = list(set(result_x))
 
-    # data_thuat_ngu = pd.read_csv(
-    #     './data/full_thuat_ngu_procesing_v3.csv')
-    #
 
-    #
-    # words = data_thuat_ngu['thuatngu_lower'].map(lambda x: is_in(x, html))
-    # result = [x for x in words if x != -1]
-    # result = list(set(result))
-    # print(result)
-    #
-    #
 
     data_thuat_ngu_temp = data_thuat_ngu.copy()
     data_thuat_ngu_temp['drop'] = data_thuat_ngu_temp['thuatngu_lower'].map(lambda x: is_in2(x, result_x))
@@ -113,3 +181,4 @@ def get_thuat_ngu_in_html(id):
         print(f"{term}: {meaning}")
 
     return jsonify(result_dict)
+
