@@ -3,6 +3,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 from saleapp import app, login, dao
 from saleapp.routes.api import api
 import cloudinary.uploader
+
+
 @app.route("/")
 @login_required
 def index():
@@ -29,7 +31,6 @@ def user_login():
 
 @app.route("/register", methods=["get", "post"])
 def register():
-
     if session.get("user"):
         return redirect(request.url)
     err_msg = ""
@@ -47,7 +48,7 @@ def register():
             if avatar:
                 res = cloudinary.uploader.upload(avatar)
                 avatar_path = res['secure_url']
-            if dao.add_user(name=name, username=username, password=password, email = email, avatar = avatar_path):
+            if dao.add_user(name=name, username=username, password=password, email=email, avatar=avatar_path):
                 return redirect(url_for("index"))
             else:
                 err_msg = "Something Wrong!!!"
@@ -59,10 +60,10 @@ def register():
 def user_load(user_id):
     return dao.get_user_by_id(user_id=user_id)
 
+
 app.register_blueprint(api, url_prefix='/api')
-
-
 
 if __name__ == "__main__":
     from saleapp.admin import *
+
     app.run(debug=True, host="localhost", port=5051)

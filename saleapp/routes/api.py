@@ -9,18 +9,11 @@ from saleapp.controller.AThuatNgu import *
 from saleapp.controller.ACauHoi import *
 from saleapp.controller.ATraLoi import *
 
-
-
 api = Blueprint('api', __name__)
-
-
-
-
 
 api.route('/login', methods=['POST'])(api_user_login)
 api.route('/current-user', methods=["GET"])(api_current_user)
 api.route('/register-user', methods=["POST"])(api_user_register)
-
 
 api.route('/chu_de_phap_dien', methods=["GET"])(api_chu_de_phap_dien)
 api.route('/chu_de_phap_dien/<chu_de_id>/de_muc', methods=["GET"])(api_de_muc_phap_dien)
@@ -34,7 +27,6 @@ api.route('/thuat_ngu/<id>', methods=["POST"])(get_thuat_ngu_in_html)
 api.route('/cau_hoi/<chu_de_id>', methods=["GET"])(api_get_cau_hoi_theo_chu_de)
 api.route('/add_cau_hoi', methods=["POST"])(api_add_cau_hoi)
 api.route('/cau_hoi_by_id/<id>', methods=["GET"])(api_get_cau_hoi_by_id)
-
 
 # cau tra loi
 api.route('/tra_loi/<cau_hoi_id>', methods=["GET"])(api_get_tra_loi_theo_cau_hoi)

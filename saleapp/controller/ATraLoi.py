@@ -20,14 +20,11 @@ def traloi_serializer(traloi):
     }
 
 
-
-
-
 def api_get_tra_loi_theo_cau_hoi(cau_hoi_id):
-   list_tra_loi = dao.get_reply_of_cau_hoi(cau_hoi_id)
-   if list_tra_loi is not None:
-       serialized_list_tra_loi = [traloi_serializer(tra_loi) for tra_loi in list_tra_loi]
-       return jsonify(serialized_list_tra_loi)
+    list_tra_loi = dao.get_reply_of_cau_hoi(cau_hoi_id)
+    if list_tra_loi is not None:
+        serialized_list_tra_loi = [traloi_serializer(tra_loi) for tra_loi in list_tra_loi]
+        return jsonify(serialized_list_tra_loi)
 
 
 def api_add_cau_tra_loi():
@@ -35,7 +32,6 @@ def api_add_cau_tra_loi():
     cau_hoi_id = request.json.get("question_id", None)
     user_id = request.json.get("user_id", None)
 
-    reply = dao.add_reply(noi_dung= noi_dung_tra_loi, cau_hoi_id=cau_hoi_id, user_id = user_id)
+    reply = dao.add_reply(noi_dung=noi_dung_tra_loi, cau_hoi_id=cau_hoi_id, user_id=user_id)
 
     return jsonify({"msg": "Them cau hoi thanh cong"}), 200
-

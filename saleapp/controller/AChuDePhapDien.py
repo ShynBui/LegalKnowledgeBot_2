@@ -17,13 +17,8 @@ def chude_serializer(chude):
     }
 
 
-
-
-
 def api_chu_de_phap_dien():
-   list_chude = dao.get_chu_de_phap_dien()
-   if list_chude is not None:
-       serialized_list_chu_de = [chude_serializer(chu_de) for chu_de in list_chude]
-       return jsonify(serialized_list_chu_de)
-
-
+    list_chude = dao.get_chu_de_phap_dien()
+    if list_chude is not None:
+        serialized_list_chu_de = [chude_serializer(chu_de) for chu_de in list_chude]
+        return jsonify(serialized_list_chu_de)

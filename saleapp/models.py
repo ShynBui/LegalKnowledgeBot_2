@@ -7,15 +7,15 @@ from datetime import datetime
 from flask_login import UserMixin
 from saleapp import importfile
 
+
 class BaseModel(db.Model):
     __abstract__ = True
     id = Column(Integer, primary_key=True, autoincrement=True)
 
+
 class UserRole(UserEnum):
     ADMIN = 1
     USER = 2
-
-
 
 
 class User(BaseModel, UserMixin):
@@ -36,6 +36,7 @@ class User(BaseModel, UserMixin):
     def __str__(self):
         return self.name
 
+
 class ChuDePhapDien(db.Model):
     __tablename__ = 'chu_de_phap_dien'
     __table_args__ = {'extend_existing': True}
@@ -46,6 +47,7 @@ class ChuDePhapDien(db.Model):
 
     def __str__(self):
         return self.ten_chu_de
+
 
 class DeMucPhapDien(db.Model):
     __tablename__ = 'de_muc_phap_dien'
@@ -60,6 +62,7 @@ class DeMucPhapDien(db.Model):
     def __str__(self):
         return str(self.stt)
 
+
 class ChuongVaDieuPhapDien(db.Model):
     __tablename__ = 'chuong_va_dieu_phap_dien'
     __table_args__ = {'extend_existing': True}
@@ -70,10 +73,10 @@ class ChuongVaDieuPhapDien(db.Model):
     ten = Column(Text)
     stt = Column(Integer)
     chuong_cha_id = Column(String(255), ForeignKey('chuong_va_dieu_phap_dien.id'), nullable=True)
-    chuong_cha = relationship('models.ChuongVaDieuPhapDien', backref=backref('chi_muc_con', uselist=True, lazy=True), lazy=False, uselist=False, remote_side=[id])
-    # chu_de_id = Column(String(255), ForeignKey('chu_de_phap_dien.id'))
+    chuong_cha = relationship('models.ChuongVaDieuPhapDien', backref=backref('chi_muc_con', uselist=True, lazy=True),
+                              lazy=False, uselist=False, remote_side=[id])
+
     de_muc_id = Column(String(255), ForeignKey('de_muc_phap_dien.id'))
-    # chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='chuong_va_dieu_phap_dien', lazy=True)
     de_muc_phap_dien = relationship('models.DeMucPhapDien', backref='chuong_va_dieu_phap_dien', lazy=True)
 
     def __str__(self):
@@ -91,7 +94,6 @@ class ThuatNgu(BaseModel):
     label = Column(Integer)
     tinh = Column(String(255))
 
-
     def __str__(self):
         return str(self.thuat_ngu)
 
@@ -107,8 +109,11 @@ class CauHoi(BaseModel):
     thoi_gian = Column(DateTime, nullable=False, default=datetime.now())
     chu_de_phap_dien = relationship('models.ChuDePhapDien', backref='CauHoi')
     user = relationship('models.User', backref='CauHoi', lazy=True)
+
     def __str__(self):
         return self.tieu_de_cau_hoi
+
+
 class Reply(BaseModel):
     __tablename__ = 'tra_loi'
     __table_args__ = {'extend_existing': True}
@@ -127,4 +132,3 @@ if __name__ == '__main__':
         # db.session.commit()
         db.create_all()
         db.session.commit()
-

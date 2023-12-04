@@ -3,6 +3,7 @@ from saleapp import dao, app
 
 app.app_context().push()
 
+
 class TestUserFunc(unittest.TestCase):
 
     def test_get_user_by_id(self):
@@ -18,11 +19,10 @@ class TestUserFunc(unittest.TestCase):
         self.assertEqual(user.username, user_data["username"])
         self.assertEqual(user.email, user_data["email"])
 
-
     def test_check_login_notNull(self):
         username_test = 'user'
         password_test = '123'
-        user = dao.check_login(username_test,password_test)
+        user = dao.check_login(username_test, password_test)
         self.assertIsNotNone(user)
 
     def test_check_login_null(self):
@@ -40,6 +40,7 @@ class TestUserFunc(unittest.TestCase):
         user = dao.add_user_api(name="tesst", username="test1", password="123")
         self.assertIsNotNone(user)
         # dao.delete_user_by_username(username="test_true")
+
 
 if __name__ == '__main__':
     unittest.main()

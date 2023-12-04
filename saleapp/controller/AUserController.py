@@ -30,12 +30,12 @@ def user_serializer(user):
     }
 
 
-
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
 
     return dao.get_user_by_id(identity)
+
 
 def api_user_login():
     username = request.json.get("username", None)
@@ -50,7 +50,6 @@ def api_user_login():
         return jsonify({"msg": "Bad username or password"}), 401
 
 
-
 @jwt_required()
 @cross_origin()
 def api_current_user():
@@ -63,7 +62,6 @@ def api_current_user():
     )
 
 
-
 def api_user_register():
     username = request.json.get("username", None)
     email = request.json.get("email", None)
@@ -71,7 +69,6 @@ def api_user_register():
     name = request.json.get('name', None)
     password = request.json.get("password", None)
     confirmPass = request.json.get("confirmPassword", None)
-    user = dao.add_user_api(name = name, username = username, password = password, email = email)
+    user = dao.add_user_api(name=name, username=username, password=password, email=email)
     print(user)
     return jsonify({"msg": "register sucess"}), 201
-
