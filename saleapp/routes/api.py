@@ -8,6 +8,7 @@ from saleapp.controller.ADeMucPhapDien import *
 from saleapp.controller.AThuatNgu import *
 from saleapp.controller.ACauHoi import *
 from saleapp.controller.ATraLoi import *
+from saleapp.controller.AChat import *
 
 api = Blueprint('api', __name__)
 
@@ -31,3 +32,7 @@ api.route('/cau_hoi_by_id/<id>', methods=["GET"])(api_get_cau_hoi_by_id)
 # cau tra loi
 api.route('/tra_loi/<cau_hoi_id>', methods=["GET"])(api_get_tra_loi_theo_cau_hoi)
 api.route('/add_tra_loi', methods=["POST"])(api_add_cau_tra_loi)
+
+# chat
+api.route('/chat/', methods=['GET'])(get_tin_nhan_api)
+api.route('/chat/', methods=['POST'])(add_tin_nhan_api)

@@ -7,7 +7,7 @@ from saleapp import app, jwt, dao
 from flask import jsonify, request
 
 from saleapp.models import User, UserRole
-from sale_app import embeddings
+from saleapp import embeddings
 import os
 
 from langchain.text_splitter import CharacterTextSplitter
@@ -17,7 +17,7 @@ from langchain.vectorstores import Chroma
 
 
 API_URL = "https://api-inference.huggingface.co/models/ShynBui/vie_qa"
-headers = {"Authorization": "Bearer " + os.getenv('TOKEN_HUGGING_FACE')}
+headers = {"Authorization": "Bearer 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"}
 
 
 def tin_nhan_serializer(tin_nhan):
@@ -37,11 +37,11 @@ def query(payload):
 
 
 @jwt_required()
-def get_tin_nhan_api(room_id):
+def get_tin_nhan_api():
     tin_nhan_list = dao.get_tin_nhan_by_user_id(current_user.id)
     serialized_list_tin_nhan = [tin_nhan_serializer(tin_nhan) for tin_nhan in
                                           list_tin_nhan]
-        return jsonify(serialized_list_tin_nhan)
+    return jsonify(serialized_list_tin_nhan)
 
 
 
