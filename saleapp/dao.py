@@ -131,3 +131,14 @@ def add_reply(noi_dung, cau_hoi_id, user_id):
 
 def get_cau_hoi_by_id(id):
     return CauHoi.query.filter(CauHoi.id.__eq__(id)).first()
+
+
+def add_tin_nhan(noi_dung, user_id, nguon=None):
+    tin_nhan_moi = Message(noi_dung=noi_dung, user_id=user_id, nguon=nguon)
+    db.session.add(tin_nhan_moi)
+    db.session.commit()
+    return tin_nhan_moi
+
+
+def get_tin_nhan_by_user_id(user_id):
+    return Message.query.filter(Message.user_id.__eq__(user_id)).order_by(Message.thoi_gian_tao).all()

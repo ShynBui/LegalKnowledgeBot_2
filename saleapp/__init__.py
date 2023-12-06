@@ -19,6 +19,10 @@ db = SQLAlchemy(app=app)
 login = LoginManager(app=app)
 jwt = JWTManager(app)
 
+
+from langchain.embeddings import HuggingFaceEmbeddings
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+
 cloudinary.config(
     cloud_name="dcjashgrj",
     api_key="398533167669176",

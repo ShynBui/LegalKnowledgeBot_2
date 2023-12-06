@@ -126,9 +126,18 @@ class Reply(BaseModel):
     cau_hoi = relationship('models.CauHoi', backref='Reply', lazy=True)
 
 
+class Message(BaseModel):
+    __tablename__ = 'tin_nhan'
+    noi_dung = Column(Text, nullable=False)
+    thoi_gian_tao = Column(DateTime, nullable=False, default=datetime.now())
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=True)
+    user = relationship('models.User', backref='message', lazy=False)
+    nguon = Column(Text, nullable=True)
+
+
 if __name__ == '__main__':
     with app.app_context():
         # db.drop_all()
         # db.session.commit()
         db.create_all()
-        db.session.commit()
+        # db.session.commit()
